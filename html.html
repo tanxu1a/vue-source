@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue源码分析</title>
+    <script src="vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <p>{{ message }}</p>
+        <comp1></comp1>
+    </div>
+</body>
+<script>
+     var app = new Vue({
+         el: "#app",
+         data: {
+             message: "hello vue"
+         },
+         components: {
+             comp1: {
+                 template: '<p>{{ value1 }}</p>',
+                 props: {
+                     prop1: String
+                 },
+                 data: function () {
+                     return {
+                         value1: 123
+                     }
+                 }
+             }
+         }
+     })
+
+
+</script>
+</html>
