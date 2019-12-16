@@ -6,6 +6,7 @@ import { warn, makeMap, isNative } from '../util/index'
 let initProxy
 
 if (process.env.NODE_ENV !== 'production') {
+  // 存在以下关键字返回true
   const allowedGlobals = makeMap(
     'Infinity,undefined,NaN,isFinite,isNaN,' +
     'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
@@ -34,6 +35,7 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
 
+  // 是否原生js支持proxy
   const hasProxy =
     typeof Proxy !== 'undefined' && isNative(Proxy)
 
@@ -67,8 +69,12 @@ if (process.env.NODE_ENV !== 'production') {
 
   const getHandler = {
     get (target, key) {
+      // 如果访问的target.key不存在
       if (typeof key === 'string' && !(key in target)) {
+        // 如果访问的key值 存在于$data中
+        // 给出警告 用$data.key去访问
         if (key in target.$data) warnReservedPrefix(target, key)
+          // 否则警告无此属性
         else warnNonPresent(target, key)
       }
       return target[key]
@@ -79,6 +85,9 @@ if (process.env.NODE_ENV !== 'production') {
     if (hasProxy) {
       // determine which proxy handler to use
       const options = vm.$options
+      // 如果options中存在render函数，并且render._withStripped = true
+      // 就对 属性的get方法进行代理拦截
+      // 否则就对has方法进行代理拦截
       const handlers = options.render && options.render._withStripped
         ? getHandler
         : hasHandler

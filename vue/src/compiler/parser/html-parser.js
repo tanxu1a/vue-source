@@ -50,26 +50,33 @@ function decodeAttr (value, shouldDecodeNewlines) {
   const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
   return value.replace(re, match => decodingMap[match])
 }
-
+// 解析html
 export function parseHTML (html, options) {
   const stack = []
+  // web环境是true
   const expectHTML = options.expectHTML
+  // 无内容的标签
   const isUnaryTag = options.isUnaryTag || no
+  // 可以不闭合的标签
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
   let index = 0
   let last, lastTag
   while (html) {
     last = html
     // Make sure we're not in a plaintext content element like script/style
+    // 确保父级标签不是 script,style,textarea
     if (!lastTag || !isPlainTextElement(lastTag)) {
+      // 第一个 '<' 的位置
       let textEnd = html.indexOf('<')
       if (textEnd === 0) {
         // Comment:
+        // 处理注释
         if (comment.test(html)) {
           const commentEnd = html.indexOf('-->')
 
           if (commentEnd >= 0) {
             if (options.shouldKeepComment) {
+              // 调用传进来的comment处理方法
               options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3)
             }
             advance(commentEnd + 3)
@@ -78,6 +85,7 @@ export function parseHTML (html, options) {
         }
 
         // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
+        // 如果以<![ 开头    啥也没做，直接略过了
         if (conditionalComment.test(html)) {
           const conditionalEnd = html.indexOf(']>')
 
@@ -88,6 +96,7 @@ export function parseHTML (html, options) {
         }
 
         // Doctype:
+        // 如果匹配到有文档类型相关的字符串  同样滤过
         const doctypeMatch = html.match(doctype)
         if (doctypeMatch) {
           advance(doctypeMatch[0].length)
@@ -179,6 +188,7 @@ export function parseHTML (html, options) {
   // Clean up any remaining tags
   parseEndTag()
 
+  // 截取前面的字符串串
   function advance (n) {
     index += n
     html = html.substring(n)

@@ -17,7 +17,9 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 import { isUpdatingChildComponent } from './lifecycle'
 
 export function initRender (vm: Component) {
+  // 初始化_vnode属性
   vm._vnode = null // the root of the child tree
+  // 初始化_staticTrees属性
   vm._staticTrees = null // v-once cached trees
   const options = vm.$options
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree

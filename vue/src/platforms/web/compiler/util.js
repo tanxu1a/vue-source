@@ -1,7 +1,7 @@
 /* @flow */
 
 import { makeMap } from 'shared/util'
-
+// 这些都是开始结束标签之间 没有内容的标签
 export const isUnaryTag = makeMap(
   'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
   'link,meta,param,source,track,wbr'
@@ -9,6 +9,7 @@ export const isUnaryTag = makeMap(
 
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
+// 可以不闭合的标签
 export const canBeLeftOpenTag = makeMap(
   'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
 )

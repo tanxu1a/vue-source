@@ -37,6 +37,7 @@ export const isReservedTag = (tag: string): ?boolean => {
   return isHTMLTag(tag) || isSVG(tag)
 }
 
+// 获得标签命名空间，即判断是svg相关标签   还是  math相关标签
 export function getTagNamespace (tag: string): ?string {
   if (isSVG(tag)) {
     return 'svg'

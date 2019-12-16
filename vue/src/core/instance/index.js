@@ -16,6 +16,7 @@ function Vue (options) {
 
 initMixin(Vue)
 stateMixin(Vue)
+// $on，$off，$once方法
 eventsMixin(Vue)
 lifecycleMixin(Vue)
 renderMixin(Vue)

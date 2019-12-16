@@ -76,22 +76,29 @@ export function createASTElement (
 /**
  * Convert HTML string to AST.
  */
+// 将html字符串转化为抽象语法树
 export function parse (
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
+  // 警告函数，没有的话用基础的
   warn = options.warn || baseWarn
 
+  // 拿到isPreTag函数，如果  参数 === 'pre'  返回true，用于判断是否是pre标签
   platformIsPreTag = options.isPreTag || no
+  // 用来检测一个属性在标签中是否要使用元素对象原生的 prop 进行绑定
   platformMustUseProp = options.mustUseProp || no
   platformGetTagNamespace = options.getTagNamespace || no
+  // 判断是html标签或者svg标签
   const isReservedTag = options.isReservedTag || no
+  // 可能是组件
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
 
   transforms = pluckModuleFunction(options.modules, 'transformNode')
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
+  // 表示  模板上 包裹表达式的开始和结束字符    默认是  ["{{", "}}"]
   delimiters = options.delimiters
 
   const stack = []
@@ -213,29 +220,36 @@ export function parse (
     start (tag, attrs, unary, start, end) {
       // check namespace.
       // inherit parent ns if there is one
+      // 获得命名空间
       const ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag)
 
       // handle IE svg bug
       /* istanbul ignore if */
+      // 如果是svg 处理ie的bug
       if (isIE && ns === 'svg') {
         attrs = guardIESVGBug(attrs)
       }
 
+      // 创建ast
       let element: ASTElement = createASTElement(tag, attrs, currentParent)
+      // 如果命名空间存在，就给当前ast赋值
       if (ns) {
         element.ns = ns
       }
 
       if (process.env.NODE_ENV !== 'production') {
+        // 如果是开发环境，outputSourceRange为true的话，那么给ast设置start，end等属性表示源代码所处的位置
         if (options.outputSourceRange) {
           element.start = start
           element.end = end
+          // 将attrsList数组转化为  对象，key就是属性名称
           element.rawAttrsMap = element.attrsList.reduce((cumulated, attr) => {
             cumulated[attr.name] = attr
             return cumulated
           }, {})
         }
         attrs.forEach(attr => {
+          // 校验属性名称是否合法
           if (invalidAttributeRE.test(attr.name)) {
             warn(
               `Invalid dynamic argument expression: attribute names cannot contain ` +
@@ -249,6 +263,7 @@ export function parse (
         })
       }
 
+      // 如果是被禁止的标签   并且不是服务端渲染
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true
         process.env.NODE_ENV !== 'production' && warn(
@@ -379,11 +394,13 @@ export function parse (
         }
       }
     },
+    // 处理注释
     comment (text: string, start, end) {
       // adding anyting as a sibling to the root node is forbidden
       // comments should still be allowed, but ignored
       if (currentParent) {
         const child: ASTText = {
+          // type为3 表示文本类型
           type: 3,
           text,
           isComment: true

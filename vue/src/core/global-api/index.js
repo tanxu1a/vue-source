@@ -42,13 +42,16 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     warn,
     // 合并对象
     extend,
-
+    // 合并两个options的方法
     mergeOptions,
+    // 定义响应式属性的方法
     defineReactive
   }
-
+  // 静态 set方法
   Vue.set = set
+  // 静态 delete方法
   Vue.delete = del
+  // 静态 nexttick方法
   Vue.nextTick = nextTick
 
   // 2.6 explicit observable API
@@ -57,18 +60,24 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     return obj
   }
 
+  // 初始化Vue的options属性(静态属性)
   Vue.options = Object.create(null)
+  // 初始化'components','directives','filters'  属性
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
   })
 
   // this is used to identify the "base" constructor to extend all plain-object
   // components with in Weex's multi-instance scenarios.
+  // _base标识Vue是所有组件的基础构造函数
   Vue.options._base = Vue
 
+  // 初始化components属性，KeepAlive组件
   extend(Vue.options.components, builtInComponents)
 
+  // 定义Vue.use方法
   initUse(Vue)
+  // 定义Vue.minx方法
   initMixin(Vue)
   initExtend(Vue)
   initAssetRegisters(Vue)

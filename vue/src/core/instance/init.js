@@ -13,9 +13,11 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 let uid = 0
 
 export function initMixin (Vue: Class<Component>) {
+  // 初始化函数
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
     // a uid
+    // 一个自增的uid
     vm._uid = uid++
 
     // 性能埋点相关
@@ -34,6 +36,7 @@ export function initMixin (Vue: Class<Component>) {
     // 如果是组件的话
     // 第一次new Vue调用了 this._init()方法，再次之前并未给_isComponent赋值，
     // 所以new Vue()之后调用的init方法会走到else去
+    // todo 待注释
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
@@ -50,14 +53,19 @@ export function initMixin (Vue: Class<Component>) {
       )
     }
     /* istanbul ignore else */
+    // 如果是非生产环境，添加一些代理，has 或者  get方法的代理
+    // 主要用于检查属性是否存在，是否合法
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
       vm._renderProxy = vm
     }
     // expose real self
+    // vue的实例的_self等于这个vue实例
     vm._self = vm
+    // 初始化生命周期相关的属性，和
     initLifecycle(vm)
+    // 初始化事件
     initEvents(vm)
     initRender(vm)
     callHook(vm, 'beforeCreate')

@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>vue源码分析</title>
-    <script src="vue/dist/vue.js"></script>
+    <script src="./vue/dist/vue.js"></script>
 </head>
 <body>
     <div id="app">
         <p>{{ message }}</p>
-        <comp1></comp1>
+        <comp1 @test="test"></comp1>
     </div>
 </body>
 <script>
+     window.Vue.config.performance = true
      var app = new Vue({
          el: "#app",
          data: {
@@ -19,7 +20,7 @@
          },
          components: {
              comp1: {
-                 template: '<p>{{ value1 }}</p>',
+                 template: '<p @click="test">{{ value1 }}</p>',
                  props: {
                      prop1: String
                  },
@@ -27,11 +28,24 @@
                      return {
                          value1: 123
                      }
-                 }
+                 },
+               methods: {
+                   test: function () {
+                     console.log('ddd')
+                   }
+               }
              }
+         },
+       methods: {
+         test: function () {
+            console.log('sss')
          }
+       },
+        created: function () {
+          console.log(123)
+        }
      })
-
+console.log(app)
 
 </script>
 </html>

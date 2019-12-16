@@ -143,12 +143,14 @@ export function remove (arr: Array<any>, item: any): Array<any> | void {
  * Check whether an object has the property.
  */
 const hasOwnProperty = Object.prototype.hasOwnProperty
+// 自有非继承属性
 export function hasOwn (obj: Object | Array<*>, key: string): boolean {
   return hasOwnProperty.call(obj, key)
 }
 
 /**
  * Create a cached version of a pure function.
+ * 缓存函数结果
  */
 export function cached<F: Function> (fn: F): F {
   const cache = Object.create(null)
@@ -160,6 +162,7 @@ export function cached<F: Function> (fn: F): F {
 
 /**
  * Camelize a hyphen-delimited string.
+ * 将中间带-转化为驼峰命名  如   data-list =》  dataList
  */
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str: string): string => {
@@ -214,6 +217,8 @@ export const bind = Function.prototype.bind
 
 /**
  * Convert an Array-like object to a real Array.
+ * 将类数组对象转换为真正的数组
+ * 从第start + 1个开始
  */
 export function toArray (list: any, start?: number): Array<any> {
   start = start || 0
@@ -227,7 +232,6 @@ export function toArray (list: any, start?: number): Array<any> {
 
 /**
  * Mix properties into target object.
- * 合并两个对象的属性
  */
 export function extend (to: Object, _from: ?Object): Object {
   for (const key in _from) {

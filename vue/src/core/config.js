@@ -4,7 +4,7 @@ import {
   no,
   noop,
   identity
-} from 'shared/util'
+} from './../shared/util'
 
 import { LIFECYCLE_HOOKS } from 'shared/constants'
 

@@ -3,21 +3,25 @@
 import { extend } from 'shared/util'
 import { detectErrors } from './error-detector'
 import { createCompileToFunctionFn } from './to-function'
-
+// 函数柯里化
 export function createCompilerCreator (baseCompile: Function): Function {
   return function createCompiler (baseOptions: CompilerOptions) {
     function compile (
       template: string,
       options?: CompilerOptions
     ): CompiledResult {
+      // baseOptions
       const finalOptions = Object.create(baseOptions)
+      // 错误
       const errors = []
+      // 提示
       const tips = []
 
       let warn = (msg, range, tip) => {
         (tip ? tips : errors).push(msg)
       }
 
+      // options传了的话，合并
       if (options) {
         if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
           // $flow-disable-line
@@ -38,10 +42,12 @@ export function createCompilerCreator (baseCompile: Function): Function {
         }
         // merge custom modules
         if (options.modules) {
+          // 合并自定义的 options.modules
           finalOptions.modules =
             (baseOptions.modules || []).concat(options.modules)
         }
         // merge custom directives
+        // 合并自定义的指令
         if (options.directives) {
           finalOptions.directives = extend(
             Object.create(baseOptions.directives || null),
@@ -49,6 +55,7 @@ export function createCompilerCreator (baseCompile: Function): Function {
           )
         }
         // copy other options
+        // 合并其他属性
         for (const key in options) {
           if (key !== 'modules' && key !== 'directives') {
             finalOptions[key] = options[key]

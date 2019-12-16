@@ -12,6 +12,7 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   template: string,
   options: CompilerOptions
 ): CompiledResult {
+  // 将模板转换为抽象语法树
   const ast = parse(template.trim(), options)
   if (options.optimize !== false) {
     optimize(ast, options)

@@ -29,11 +29,15 @@ export function setActiveInstance(vm: Component) {
   }
 }
 
+// 初始化生命周期
 export function initLifecycle (vm: Component) {
+  // 获得options
   const options = vm.$options
 
   // locate first non-abstract parent
   let parent = options.parent
+  // 如果parent(父组件)存在的话
+  // todo 后续注释
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
@@ -41,12 +45,16 @@ export function initLifecycle (vm: Component) {
     parent.$children.push(vm)
   }
 
+  // 给vue实例的$parent赋值
   vm.$parent = parent
+  // 根组件
   vm.$root = parent ? parent.$root : vm
-
+  // 初始化 子组件数组
   vm.$children = []
+  // 初始化 refs
   vm.$refs = {}
 
+  // 初始化一些私有属性值 后续会用到
   vm._watcher = null
   vm._inactive = null
   vm._directInactive = false
