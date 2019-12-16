@@ -48,6 +48,7 @@ const shouldIgnoreFirstNewline = (tag, html) => tag && isIgnoreNewlineTag(tag) &
 
 function decodeAttr (value, shouldDecodeNewlines) {
   const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
+  // 将匹配到的转换为 decodingMap中的值
   return value.replace(re, match => decodingMap[match])
 }
 // 解析html
@@ -104,15 +105,19 @@ export function parseHTML (html, options) {
         }
 
         // End tag:
+        // 如果遇到结束标签
         const endTagMatch = html.match(endTag)
         if (endTagMatch) {
           const curIndex = index
+          // 截取掉结束标签
           advance(endTagMatch[0].length)
+          // 处理结束标签
           parseEndTag(endTagMatch[1], curIndex, index)
           continue
         }
 
         // Start tag:
+        // 匹配开始标签   匹配的属性都保存在对象的attrs中
         const startTagMatch = parseStartTag()
         if (startTagMatch) {
           handleStartTag(startTagMatch)
@@ -219,11 +224,13 @@ export function parseHTML (html, options) {
     }
   }
 
+  // 处理开始标签 主要是在处理 attrs
   function handleStartTag (match) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
     if (expectHTML) {
+      // 如果上一个标签是P标签
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag)
       }
@@ -232,6 +239,7 @@ export function parseHTML (html, options) {
       }
     }
 
+    // 非必须闭合标签
     const unary = isUnaryTag(tagName) || !!unarySlash
 
     const l = match.attrs.length
@@ -239,6 +247,7 @@ export function parseHTML (html, options) {
     for (let i = 0; i < l; i++) {
       const args = match.attrs[i]
       const value = args[3] || args[4] || args[5] || ''
+      // 是否解析换行符，默认都是转换了的
       const shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
         ? options.shouldDecodeNewlinesForHref
         : options.shouldDecodeNewlines
@@ -252,11 +261,13 @@ export function parseHTML (html, options) {
       }
     }
 
+    // 如果不是可不闭合标签
     if (!unary) {
       stack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs, start: match.start, end: match.end })
       lastTag = tagName
     }
 
+    // 调用传入的start方法
     if (options.start) {
       options.start(tagName, attrs, unary, match.start, match.end)
     }
@@ -268,6 +279,7 @@ export function parseHTML (html, options) {
     if (end == null) end = index
 
     // Find the closest opened tag of the same type
+    // 再stack中找开始标签
     if (tagName) {
       lowerCasedTagName = tagName.toLowerCase()
       for (pos = stack.length - 1; pos >= 0; pos--) {
@@ -293,6 +305,7 @@ export function parseHTML (html, options) {
           )
         }
         if (options.end) {
+          // 调用传入的end方法
           options.end(stack[i].tag, start, end)
         }
       }

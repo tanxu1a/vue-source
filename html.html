@@ -8,7 +8,8 @@
 <body>
     <div id="app">
         <p>{{ message }}</p>
-        <comp1 @test="test"></comp1>
+        <a href="https://www.bai&#9;du.com"/>
+        <comp1 @test="test" prop1="1" prop2="2" prop3="3"></comp1>
     </div>
 </body>
 <script>
@@ -22,7 +23,9 @@
              comp1: {
                  template: '<p @click="test">{{ value1 }}</p>',
                  props: {
-                     prop1: String
+                     prop1: String,
+                   prop2: String,
+                   prop3: String
                  },
                  data: function () {
                      return {

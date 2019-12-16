@@ -22,14 +22,17 @@ import {
   addIfCondition,
   createASTElement
 } from 'compiler/parser/index'
-
+// 模板转换为AST时会调用
 function preTransformNode (el: ASTElement, options: CompilerOptions) {
+  // 这里主要处理 input
   if (el.tag === 'input') {
     const map = el.attrsMap
+    // 如果没有v-model属性 返回
     if (!map['v-model']) {
       return
     }
 
+    // 如果有绑定type属性
     let typeBinding
     if (map[':type'] || map['v-bind:type']) {
       typeBinding = getBindingAttr(el, 'type')
@@ -85,6 +88,7 @@ function preTransformNode (el: ASTElement, options: CompilerOptions) {
   }
 }
 
+// 克隆一个AST
 function cloneASTElement (el) {
   return createASTElement(el.tag, el.attrsList.slice(), el.parent)
 }

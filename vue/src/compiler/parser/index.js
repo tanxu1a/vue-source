@@ -230,7 +230,7 @@ export function parse (
         attrs = guardIESVGBug(attrs)
       }
 
-      // 创建ast
+      // 创建ast的结构
       let element: ASTElement = createASTElement(tag, attrs, currentParent)
       // 如果命名空间存在，就给当前ast赋值
       if (ns) {
@@ -275,6 +275,8 @@ export function parse (
       }
 
       // apply pre-transforms
+      // 调用preTransform 处理element 对象  默认就是options.mouduls传入的对象中的preTransform函数
+      //
       for (let i = 0; i < preTransforms.length; i++) {
         element = preTransforms[i](element, options) || element
       }
@@ -297,17 +299,21 @@ export function parse (
         processOnce(element)
       }
 
+      // 如果root为空的话，root就等于这个el
       if (!root) {
         root = element
         if (process.env.NODE_ENV !== 'production') {
+          //如果是开发环境 检查一波
           checkRootConstraints(root)
         }
       }
 
+      // 如果不是无内容标签
       if (!unary) {
         currentParent = element
         stack.push(element)
       } else {
+        // 否则调用闭合标签函数
         closeElement(element)
       }
     },
