@@ -9,7 +9,10 @@
     <div id="app">
         <p>{{ message }}</p>
         <a href="https://www.bai&#9;du.com"/>
-        <comp1 @test="test" prop1="1" prop2="2" prop3="3"></comp1>
+        <comp1 @test="test" prop1="1" prop2="2" prop3="3">
+            <p>asdfasdf</p>
+        </comp1>
+        <input :type="type" v-model="test">
     </div>
 </body>
 <script>
@@ -17,11 +20,13 @@
      var app = new Vue({
          el: "#app",
          data: {
-             message: "hello vue"
+             message: "hello vue",
+           test: 123,
+           type: 'radio'
          },
          components: {
              comp1: {
-                 template: '<p @click="test">{{ value1 }}</p>',
+                 template: '<p @click="test"><slot></slot></p>',
                  props: {
                      prop1: String,
                    prop2: String,

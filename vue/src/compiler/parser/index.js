@@ -278,24 +278,36 @@ export function parse (
       // 调用preTransform 处理element 对象  默认就是options.mouduls传入的对象中的preTransform函数
       //
       for (let i = 0; i < preTransforms.length; i++) {
+        // 默认情况下 这里主要在处理 input 元素
         element = preTransforms[i](element, options) || element
       }
 
+      // 如果是不在pre中
       if (!inVPre) {
         processPre(element)
+        // 如果解析次元素有 v-pre
         if (element.pre) {
+          // 子节点都会被标识为inPre
+          // 跳过这个元素和它的子元素的编译过程
           inVPre = true
         }
       }
+      // 如果是pre标签
       if (platformIsPreTag(element.tag)) {
         inPre = true
       }
+      // 如果是V-pre
       if (inVPre) {
+        // 只简单处理一下属性
         processRawAttrs(element)
       } else if (!element.processed) {
+        // 否则如果该元素还未被处理过，因为有写标签可能预处理过如input
         // structural directives
+        // 处理v-for
         processFor(element)
+        // 处理v-if
         processIf(element)
+        // 处理v-once
         processOnce(element)
       }
 
@@ -311,6 +323,7 @@ export function parse (
       // 如果不是无内容标签
       if (!unary) {
         currentParent = element
+        // 将该元素入栈
         stack.push(element)
       } else {
         // 否则调用闭合标签函数
@@ -509,6 +522,7 @@ function processRef (el) {
   }
 }
 
+// 处理v-for
 export function processFor (el: ASTElement) {
   let exp
   if ((exp = getAndRemoveAttr(el, 'v-for'))) {
@@ -531,6 +545,7 @@ type ForParseResult = {
   iterator2?: string;
 };
 
+// 处理for语句 成对象
 export function parseFor (exp: string): ?ForParseResult {
   const inMatch = exp.match(forAliasRE)
   if (!inMatch) return
@@ -784,6 +799,7 @@ function processAttrs (el) {
   for (i = 0, l = list.length; i < l; i++) {
     name = rawName = list[i].name
     value = list[i].value
+    // 处理指令
     if (dirRE.test(name)) {
       // mark element as dynamic
       el.hasBindings = true
@@ -796,6 +812,7 @@ function processAttrs (el) {
       } else if (modifiers) {
         name = name.replace(modifierRE, '')
       }
+      // 处理v-bind指令
       if (bindRE.test(name)) { // v-bind
         name = name.replace(bindRE, '')
         value = parseFilters(value)
@@ -864,14 +881,18 @@ function processAttrs (el) {
         } else {
           addAttr(el, name, value, list[i], isDynamic)
         }
-      } else if (onRE.test(name)) { // v-on
+      }
+      // 处理v-on指令
+      else if (onRE.test(name)) { // v-on
         name = name.replace(onRE, '')
         isDynamic = dynamicArgRE.test(name)
         if (isDynamic) {
           name = name.slice(1, -1)
         }
         addHandler(el, name, value, modifiers, false, warn, list[i], isDynamic)
-      } else { // normal directives
+      }
+      // 处理其他自定义指令
+      else { // normal directives
         name = name.replace(dirRE, '')
         // parse arg
         const argMatch = name.match(argRE)

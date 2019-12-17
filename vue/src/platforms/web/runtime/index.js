@@ -1,6 +1,7 @@
 /* @flow */
 
-import Vue from 'core/index'
+// 引入Vue
+import Vue from '../../../core/index'
 import config from 'core/config'
 import { extend, noop } from 'shared/util'
 import { mountComponent } from '../../../core/instance/lifecycle'
@@ -17,15 +18,20 @@ import {
 
 import { patch } from './patch'
 import platformDirectives from './directives/index'
-import    from './components/index'
+import platformComponents from './components/index'
 
 // install platform specific utils
 // 给config设置了一些方法
 // todo
+// 用来检测一个属性在标签中是否要使用元素对象原生的 prop 进行绑定
 Vue.config.mustUseProp = mustUseProp
+// 是否是原生标签
 Vue.config.isReservedTag = isReservedTag
+// 是否是class属性或者style属性
 Vue.config.isReservedAttr = isReservedAttr
+// 获得标签命名空间，即判断是svg相关标签   还是  math相关标签
 Vue.config.getTagNamespace = getTagNamespace
+// 是否是未知元素
 Vue.config.isUnknownElement = isUnknownElement
 
 // 添加默认指令和组件

@@ -101,7 +101,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
-  // 执行untime中的$mount方法
+  // 执行runtime中的$mount方法
   return mount.call(this, el, hydrating)
 }
 

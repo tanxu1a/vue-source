@@ -9,7 +9,7 @@
  *   <input v-else-if="type === 'radio'" type="radio" v-model="data[type]">
  *   <input v-else :type="type" v-model="data[type]">
  */
-
+// 整体上就是将动态绑定type的 input标签转化为  v-if-else形式的
 import {
   addRawAttr,
   getBindingAttr,
@@ -21,7 +21,7 @@ import {
   processElement,
   addIfCondition,
   createASTElement
-} from 'compiler/parser/index'
+} from '../../../../compiler/parser/index'
 // 模板转换为AST时会调用
 function preTransformNode (el: ASTElement, options: CompilerOptions) {
   // 这里主要处理 input
@@ -35,6 +35,7 @@ function preTransformNode (el: ASTElement, options: CompilerOptions) {
     // 如果有绑定type属性
     let typeBinding
     if (map[':type'] || map['v-bind:type']) {
+      // 获得绑定的值
       typeBinding = getBindingAttr(el, 'type')
     }
     if (!map.type && !typeBinding && map['v-bind']) {
@@ -42,15 +43,21 @@ function preTransformNode (el: ASTElement, options: CompilerOptions) {
     }
 
     if (typeBinding) {
+      // if语句
       const ifCondition = getAndRemoveAttr(el, 'v-if', true)
       const ifConditionExtra = ifCondition ? `&&(${ifCondition})` : ``
+      // else语句
       const hasElse = getAndRemoveAttr(el, 'v-else', true) != null
+      // else if语句
       const elseIfCondition = getAndRemoveAttr(el, 'v-else-if', true)
       // 1. checkbox
       const branch0 = cloneASTElement(el)
       // process for on the main node
+      // 处理for循环
       processFor(branch0)
+      // 处理完之后添加一个type属性，值为checkbox
       addRawAttr(branch0, 'type', 'checkbox')
+      // 处理该元素，设置已处理过的标识防止再次处理
       processElement(branch0, options)
       branch0.processed = true // prevent it from double-processed
       branch0.if = `(${typeBinding})==='checkbox'` + ifConditionExtra

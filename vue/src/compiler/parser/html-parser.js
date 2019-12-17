@@ -10,7 +10,7 @@
  */
 
 import { makeMap, no } from 'shared/util'
-import { isNonPhrasingTag } from 'web/compiler/util'
+import { isNonPhrasingTag } from './../../platforms/web/compiler/util'
 import { unicodeRegExp } from 'core/util/lang'
 
 // Regular Expressions for parsing tags and attributes
@@ -120,6 +120,7 @@ export function parseHTML (html, options) {
         // 匹配开始标签   匹配的属性都保存在对象的attrs中
         const startTagMatch = parseStartTag()
         if (startTagMatch) {
+          // 处理起始标签
           handleStartTag(startTagMatch)
           if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
             advance(1)
@@ -230,16 +231,17 @@ export function parseHTML (html, options) {
     const unarySlash = match.unarySlash
 
     if (expectHTML) {
-      // 如果上一个标签是P标签
+      // 如果上一个标签是P标签 并且当前标签是容器标签
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag)
       }
+      // 如果是非闭合标签，并且上一个标签名称与当前相同
       if (canBeLeftOpenTag(tagName) && lastTag === tagName) {
         parseEndTag(tagName)
       }
     }
 
-    // 非必须闭合标签
+    // 无内容标签标签
     const unary = isUnaryTag(tagName) || !!unarySlash
 
     const l = match.attrs.length
@@ -279,7 +281,7 @@ export function parseHTML (html, options) {
     if (end == null) end = index
 
     // Find the closest opened tag of the same type
-    // 再stack中找开始标签
+    // 在stack中找开始标签
     if (tagName) {
       lowerCasedTagName = tagName.toLowerCase()
       for (pos = stack.length - 1; pos >= 0; pos--) {
@@ -288,12 +290,14 @@ export function parseHTML (html, options) {
         }
       }
     } else {
+      // 没找到 pos位置为 0
       // If no tag name is provided, clean shop
       pos = 0
     }
 
     if (pos >= 0) {
       // Close all the open elements, up the stack
+      // 遍历栈 从 栈顶-> pos
       for (let i = stack.length - 1; i >= pos; i--) {
         if (process.env.NODE_ENV !== 'production' &&
           (i > pos || !tagName) &&
@@ -311,6 +315,7 @@ export function parseHTML (html, options) {
       }
 
       // Remove the open elements from the stack
+      // 缩减栈长度，移除已经执行过闭合了的元素
       stack.length = pos
       lastTag = pos && stack[pos - 1].tag
     } else if (lowerCasedTagName === 'br') {
