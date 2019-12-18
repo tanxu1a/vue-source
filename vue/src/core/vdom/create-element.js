@@ -26,10 +26,10 @@ const ALWAYS_NORMALIZE = 2
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
 export function createElement (
-  context: Component,
-  tag: any,
-  data: any,
-  children: any,
+  context: Component, // 就是vue实例
+  tag: any, // 标签
+  data: any, // 属性，事件，指令等
+  children: any, // 子节点
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
@@ -45,12 +45,13 @@ export function createElement (
 }
 
 export function _createElement (
-  context: Component,
-  tag?: string | Class<Component> | Function | Object,
-  data?: VNodeData,
-  children?: any,
+  context: Component, // 就是vue实例
+  tag?: string | Class<Component> | Function | Object, // 标签
+  data?: VNodeData, // 属性，事件，指令等
+  children?: any, // 子节点
   normalizationType?: number
 ): VNode | Array<VNode> {
+  // 如果data是响应式对象的话，报警告，并返回一个空vnode
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
       `Avoid using observed data object as vnode data: ${JSON.stringify(data)}\n` +
@@ -60,9 +61,11 @@ export function _createElement (
     return createEmptyVNode()
   }
   // object syntax in v-bind
+  // v-bind:is  如果用了is   先修改tag为is的值
   if (isDef(data) && isDef(data.is)) {
     tag = data.is
   }
+  // 如果tag不存在，返回空vnode
   if (!tag) {
     // in case of component :is set to falsy value
     return createEmptyVNode()

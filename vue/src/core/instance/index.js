@@ -19,6 +19,7 @@ stateMixin(Vue)
 // $on，$off，$once方法
 eventsMixin(Vue)
 lifecycleMixin(Vue)
+// 实现$nextTick 与 _render方法
 renderMixin(Vue)
 
 export default Vue

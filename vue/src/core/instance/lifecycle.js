@@ -152,8 +152,11 @@ export function mountComponent (
   hydrating?: boolean
 ): Component {
   vm.$el = el
+  // 如果不存在render函数
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
+    // 如果不存在render函数而且用了template的话，会报runtime only警告
+    // 因为runtime only版本不会吧template编译为rendre函数
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
@@ -172,6 +175,7 @@ export function mountComponent (
       }
     }
   }
+  // 调用beforeMount生命周期钩子
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -195,6 +199,7 @@ export function mountComponent (
     }
   } else {
     updateComponent = () => {
+      // 先调用_render()方法生成vnode 然后调用_update方法，更新真实dom
       vm._update(vm._render(), hydrating)
     }
   }
