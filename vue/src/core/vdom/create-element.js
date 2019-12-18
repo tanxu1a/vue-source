@@ -83,6 +83,7 @@ export function _createElement (
     }
   }
   // support single function children as default scoped slot
+  // 支持手写render函数，将第一个函数作为默认的slot
   if (Array.isArray(children) &&
     typeof children[0] === 'function'
   ) {
@@ -91,14 +92,20 @@ export function _createElement (
     children.length = 0
   }
   if (normalizationType === ALWAYS_NORMALIZE) {
+    // 基本上手写render函数走这个逻辑
+    // 将多纬数组的children，转化为一纬数组，顺带合并一些文本节点进行优化
+    // 意思就是手写render函数可以写多级嵌套的children
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
+    // 大部分编译生成_c不会被处理，
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
   if (typeof tag === 'string') {
     let Ctor
+    // $vnode保存的是父节点的vnode
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
+    // 如果是html标签或者svg
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn)) {
@@ -108,9 +115,11 @@ export function _createElement (
         )
       }
       vnode = new VNode(
+        // 这里不同平台的tag不一样
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       )
+      // 如果判断是组件
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
       vnode = createComponent(Ctor, data, context, children, tag)

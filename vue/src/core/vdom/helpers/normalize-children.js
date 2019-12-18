@@ -1,7 +1,7 @@
 /* @flow */
 
-import VNode, { createTextVNode } from 'core/vdom/vnode'
-import { isFalse, isTrue, isDef, isUndef, isPrimitive } from 'shared/util'
+import VNode, { createTextVNode } from '../../../core/vdom/vnode'
+import { isFalse, isTrue, isDef, isUndef, isPrimitive } from '../../../shared/util'
 
 // The template compiler attempts to minimize the need for normalization by
 // statically analyzing the template at compile time.
@@ -29,6 +29,8 @@ export function simpleNormalizeChildren (children: any) {
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
 export function normalizeChildren (children: any): ?Array<VNode> {
+  // 如果是基础类型, 创建一个文本vnode然后返回[vnode]
+  // 否则如果是个数组，将嵌套的children处理成一纬数组
   return isPrimitive(children)
     ? [createTextVNode(children)]
     : Array.isArray(children)
@@ -39,16 +41,18 @@ export function normalizeChildren (children: any): ?Array<VNode> {
 function isTextNode (node): boolean {
   return isDef(node) && isDef(node.text) && isFalse(node.isComment)
 }
-
+// 将多纬数组的children，转化为一纬数组，顺带合并一些文本节点进行优化
 function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNode> {
   const res = []
   let i, c, lastIndex, last
+  // 遍历数组
   for (i = 0; i < children.length; i++) {
     c = children[i]
     if (isUndef(c) || typeof c === 'boolean') continue
     lastIndex = res.length - 1
     last = res[lastIndex]
     //  nested
+    // 如果是数组 递归遍历
     if (Array.isArray(c)) {
       if (c.length > 0) {
         c = normalizeArrayChildren(c, `${nestedIndex || ''}_${i}`)

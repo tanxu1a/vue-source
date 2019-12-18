@@ -1,7 +1,7 @@
 /* @flow */
 
-import { toNumber, toString, looseEqual, looseIndexOf } from 'shared/util'
-import { createTextVNode, createEmptyVNode } from 'core/vdom/vnode'
+import { toNumber, toString, looseEqual, looseIndexOf } from './../../../shared/util'
+import { createTextVNode, createEmptyVNode } from './../../../core/vdom/vnode'
 import { renderList } from './render-list'
 import { renderSlot } from './render-slot'
 import { resolveFilter } from './resolve-filter'
@@ -15,6 +15,7 @@ import { bindDynamicKeys, prependModifier } from './bind-dynamic-keys'
 export function installRenderHelpers (target: any) {
   target._o = markOnce
   target._n = toNumber
+  // 返回字符串
   target._s = toString
   target._l = renderList
   target._t = renderSlot
@@ -24,6 +25,7 @@ export function installRenderHelpers (target: any) {
   target._f = resolveFilter
   target._k = checkKeyCodes
   target._b = bindObjectProps
+  // 创建一个文本的vnode
   target._v = createTextVNode
   target._e = createEmptyVNode
   target._u = resolveScopedSlots
