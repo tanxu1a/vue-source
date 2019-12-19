@@ -3,7 +3,7 @@
 // 引入Vue
 import Vue from '../../../core/index'
 import config from 'core/config'
-import { extend, noop } from 'shared/util'
+import { extend, noop } from '../../../shared/util'
 import { mountComponent } from '../../../core/instance/lifecycle'
 import { devtools, inBrowser } from 'core/util/index'
 
@@ -22,7 +22,7 @@ import platformComponents from './components/index'
 
 // install platform specific utils
 // 给config设置了一些方法
-// todo
+
 // 用来检测一个属性在标签中是否要使用元素对象原生的 prop 进行绑定
 Vue.config.mustUseProp = mustUseProp
 // 是否是原生标签
@@ -40,7 +40,7 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
-// todo
+// 挂在patch方法
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method

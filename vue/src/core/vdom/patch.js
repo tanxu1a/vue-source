@@ -67,10 +67,12 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
   return map
 }
 
+// 创建patch函数
 export function createPatchFunction (backend) {
   let i, j
   const cbs = {}
 
+  // 拿到传入的moduls和dom操作函数
   const { modules, nodeOps } = backend
 
   for (i = 0; i < hooks.length; ++i) {
@@ -697,6 +699,7 @@ export function createPatchFunction (backend) {
     }
   }
 
+  // 返回patch函数，执行这个函数可以实际更新dom
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
