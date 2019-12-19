@@ -1,7 +1,7 @@
 /* @flow */
 
 import VNode from './vnode'
-import { resolveConstructorOptions } from 'core/instance/init'
+import { resolveConstructorOptions } from '../../core/instance/init'
 import { queueActivatedComponent } from 'core/observer/scheduler'
 import { createFunctionalComponent } from './create-functional-component'
 
@@ -109,15 +109,18 @@ export function createComponent (
     return
   }
 
+  // 拿到Vue的构造方法
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
+  // 如果Ctor是一个对象，调用Vue.extend方法  实现继承  参数是扩展options会与Vue原始的options合并
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor)
   }
 
   // if at this stage it's not a constructor or an async component factory,
   // reject.
+  // 如果不是个函数，报错
   if (typeof Ctor !== 'function') {
     if (process.env.NODE_ENV !== 'production') {
       warn(`Invalid Component definition: ${String(Ctor)}`, context)
@@ -126,6 +129,7 @@ export function createComponent (
   }
 
   // async component
+  // 异步组件 todo
   let asyncFactory
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor
@@ -148,8 +152,10 @@ export function createComponent (
 
   // resolve constructor options in case global mixins are applied after
   // component constructor creation
+  // 返回当前构造器最新的options属性
   resolveConstructorOptions(Ctor)
 
+  // todo
   // transform component v-model data into props & events
   if (isDef(data.model)) {
     transformModel(Ctor.options, data)
@@ -202,6 +208,7 @@ export function createComponent (
     return renderRecyclableComponentTemplate(vnode)
   }
 
+  // 返回组件Vnode，其中componentOptions包含Ctor, propsData, listeners, tag, children重要的数据
   return vnode
 }
 

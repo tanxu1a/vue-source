@@ -39,12 +39,19 @@ export default class VNode {
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function
   ) {
+    // 标签
     this.tag = tag
+    // 数据，如attrs，事件等
     this.data = data
+    // 子节点
     this.children = children
+    // 文本
     this.text = text
+    //
     this.elm = elm
+    // 命名控件，如svg
     this.ns = undefined
+    // 上下文，一般指Vue实例对象
     this.context = context
     this.fnContext = undefined
     this.fnOptions = undefined

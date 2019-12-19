@@ -105,7 +105,7 @@ export function _createElement (
     let Ctor
     // $vnode保存的是父节点的vnode
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
-    // 如果是html标签或者svg
+    // 如果是html标签或者svg，
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn)) {
@@ -136,6 +136,7 @@ export function _createElement (
     // direct component options / constructor
     vnode = createComponent(tag, data, context, children)
   }
+  // 如果vnode是个数组，直接返回这个数组
   if (Array.isArray(vnode)) {
     return vnode
   } else if (isDef(vnode)) {

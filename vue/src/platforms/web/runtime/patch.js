@@ -1,6 +1,7 @@
 /* @flow */
 
-import * as nodeOps from 'web/runtime/node-ops'
+// dom相关操作
+import * as nodeOps from '../../web/runtime/node-ops'
 import { createPatchFunction } from '../../../core/vdom/patch'
 import baseModules from 'core/vdom/modules/index'
 import platformModules from 'web/runtime/modules/index'
