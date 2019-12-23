@@ -142,6 +142,7 @@ export function createPatchFunction (backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
+    // isRootInsert标识是否是插入根节点
     vnode.isRootInsert = !nested // for transition enter check
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
@@ -220,6 +221,7 @@ export function createPatchFunction (backend) {
       // it should've created a child instance and mounted it. the child
       // component also has set the placeholder vnode's elm.
       // in that case we can just return the element and be done.
+      // 如果vnode是一个子组件的话，即非根组件，返回true
       if (isDef(vnode.componentInstance)) {
         initComponent(vnode, insertedVnodeQueue)
         insert(parentElm, vnode.elm, refElm)
@@ -346,6 +348,7 @@ export function createPatchFunction (backend) {
     }
   }
 
+  // 执行销毁  递归调用vnode
   function invokeDestroyHook (vnode) {
     let i, j
     const data = vnode.data
@@ -701,6 +704,8 @@ export function createPatchFunction (backend) {
 
   // 返回patch函数，执行这个函数可以实际更新dom
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
+    // 如果新的vnode不存在，老的vnode存在，那么销毁老的vnode,然后返回undefined
+    // 之后的vm.$el = undefined那么界面这个元素就会被销毁
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
@@ -709,11 +714,15 @@ export function createPatchFunction (backend) {
     let isInitialPatch = false
     const insertedVnodeQueue = []
 
+    // 如果oldVnode未定义说明是创建
     if (isUndef(oldVnode)) {
+      // 如果是新创建的组件/根组件 的话
       // empty mount (likely as component), create new root element
       isInitialPatch = true
+      // 创建元素
       createElm(vnode, insertedVnodeQueue)
-    } else {
+    } else
+      {
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
