@@ -132,7 +132,9 @@ export function createPatchFunction (backend) {
     nested,
     ownerArray,
     index
-  ) {
+  )
+  {
+    // 处理vnode
     if (isDef(vnode.elm) && isDef(ownerArray)) {
       // This vnode was used in a previous render!
       // now it's used as a new node, overwriting its elm would cause
@@ -142,15 +144,23 @@ export function createPatchFunction (backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
-    // isRootInsert标识是否是插入根节点
+    // 是否作为根节点插入，被包裹的节点，该属性的值为false
     vnode.isRootInsert = !nested // for transition enter check
+    // 如果创建组件成功，就不再往后执行
+    // 只有vnode是子组件的时候createComponent才会返回true
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
 
+    // 渲染跟节点的vnode会往下走
+
+    // 拿到vnode的数据
     const data = vnode.data
+    // 拿到子vnode
     const children = vnode.children
+    // 拿到标签
     const tag = vnode.tag
+    // 如果tag定义了
     if (isDef(tag)) {
       if (process.env.NODE_ENV !== 'production') {
         if (data && data.pre) {
@@ -191,6 +201,7 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
+        // 创建根vnode的子vnode的element
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -201,10 +212,15 @@ export function createPatchFunction (backend) {
       if (process.env.NODE_ENV !== 'production' && data && data.pre) {
         creatingElmInVPre--
       }
-    } else if (isTrue(vnode.isComment)) {
+    }
+    // 否则如果tag是个注释节点
+    else if (isTrue(vnode.isComment)) {
+      // 创建一个注释节点
       vnode.elm = nodeOps.createComment(vnode.text)
       insert(parentElm, vnode.elm, refElm)
-    } else {
+    }
+    // 否则创建一个文本节点
+    else {
       vnode.elm = nodeOps.createTextNode(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     }
@@ -214,7 +230,10 @@ export function createPatchFunction (backend) {
     let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+      // 如果vnode.data.hook存在，vnode.data.hook.init存在
+      // i = vnode.data.hook.init
       if (isDef(i = i.hook) && isDef(i = i.init)) {
+        // 调用组件的init方法
         i(vnode, false /* hydrating */)
       }
       // after calling the init hook, if the vnode is a child component
@@ -510,7 +529,8 @@ export function createPatchFunction (backend) {
     ownerArray,
     index,
     removeOnly
-  ) {
+  )
+  {
     if (oldVnode === vnode) {
       return
     }
@@ -721,7 +741,8 @@ export function createPatchFunction (backend) {
       isInitialPatch = true
       // 创建元素
       createElm(vnode, insertedVnodeQueue)
-    } else
+    }
+    else
       {
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {

@@ -189,6 +189,7 @@ export function createComponent (
   }
 
   // install component management hooks onto the placeholder node
+  // 安装vnode组件的钩子
   installComponentHooks(data)
 
   // return a placeholder vnode
