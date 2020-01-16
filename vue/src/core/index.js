@@ -1,15 +1,17 @@
 import Vue from './instance/index'
 import { initGlobalAPI } from './global-api/index'
-import { isServerRendering } from 'core/util/env'
-import { FunctionalRenderContext } from 'core/vdom/create-functional-component'
+import { isServerRendering } from './../core/util/env'
+import { FunctionalRenderContext } from './../core/vdom/create-functional-component'
 
 // 初始化全局api
 initGlobalAPI(Vue)
 
+// 定义是否正在服务端渲染
 Object.defineProperty(Vue.prototype, '$isServer', {
   get: isServerRendering
 })
 
+// 服务端渲染上下文是否已存在
 Object.defineProperty(Vue.prototype, '$ssrContext', {
   get () {
     /* istanbul ignore next */

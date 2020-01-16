@@ -139,6 +139,7 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 定义依赖收集对象
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
