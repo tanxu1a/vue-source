@@ -38,6 +38,7 @@ methodsToPatch.forEach(function (method) {
         break
     }
     if (inserted) ob.observeArray(inserted)
+    // 重写数组的方法，调用notify方法
     // notify change
     ob.dep.notify()
     return result
