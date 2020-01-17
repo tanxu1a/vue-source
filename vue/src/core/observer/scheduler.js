@@ -70,6 +70,7 @@ if (inBrowser && !isIE) {
  */
 function flushSchedulerQueue () {
   currentFlushTimestamp = getNow()
+  // 正在更新
   flushing = true
   let watcher, id
 
@@ -82,6 +83,7 @@ function flushSchedulerQueue () {
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
   queue.sort((a, b) => a.id - b.id)
+
 
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
@@ -184,6 +186,7 @@ export function queueWatcher (watcher: Watcher) {
         flushSchedulerQueue()
         return
       }
+      // 将更新的回调推送至下一次更新队列中
       nextTick(flushSchedulerQueue)
     }
   }

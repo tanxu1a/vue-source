@@ -11,6 +11,7 @@ const callbacks = []
 let pending = false
 
 function flushCallbacks () {
+  console.log('异步更新')
   pending = false
   const copies = callbacks.slice(0)
   callbacks.length = 0
@@ -39,9 +40,12 @@ let timerFunc
 // completely stops working after triggering a few times... so, if native
 // Promise is available, we will use it:
 /* istanbul ignore next, $flow-disable-line */
+// 如果支持promise，
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
   const p = Promise.resolve()
   timerFunc = () => {
+    // 异步执行flushCallbacks
+    // 就是将callback中保存的callback函数都执行掉
     p.then(flushCallbacks)
     // In problematic UIWebViews, Promise.then doesn't completely break, but
     // it can get stuck in a weird state where callbacks are pushed into the
@@ -86,6 +90,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
+  // 将cb保存至callbacks队列中
   callbacks.push(() => {
     if (cb) {
       try {
@@ -97,9 +102,13 @@ export function nextTick (cb?: Function, ctx?: Object) {
       _resolve(ctx)
     }
   })
+  // 如果当前空闲
   if (!pending) {
+    // 当前忙
     pending = true
+    //
     timerFunc()
+
   }
   // $flow-disable-line
   if (!cb && typeof Promise !== 'undefined') {

@@ -161,6 +161,7 @@ export function defineReactive (
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
         dep.depend()
+
         if (childOb) {
           childOb.dep.depend()
           if (Array.isArray(value)) {
@@ -188,6 +189,7 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+
       dep.notify()
     }
   })

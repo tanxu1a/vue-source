@@ -11,6 +11,7 @@ let uid = 0
  * directives subscribing to it.
  */
 export default class Dep {
+  // 静态的实例，类似全局变量，当前正在计算的Watcher
   static target: ?Watcher;
   id: number;
   subs: Array<Watcher>;
@@ -22,6 +23,7 @@ export default class Dep {
 
   addSub (sub: Watcher) {
     this.subs.push(sub)
+
   }
 
   removeSub (sub: Watcher) {
@@ -44,6 +46,7 @@ export default class Dep {
       subs.sort((a, b) => a.id - b.id)
     }
     for (let i = 0, l = subs.length; i < l; i++) {
+      // 调用Watcher.update方法
       subs[i].update()
     }
   }

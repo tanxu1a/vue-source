@@ -131,6 +131,7 @@ export default class Watcher {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
+        // Watcher实例添加至Dep的subs中
         dep.addSub(this)
       }
     }
@@ -168,6 +169,7 @@ export default class Watcher {
     } else if (this.sync) {
       this.run()
     } else {
+      // 通常情况会走异步队列更新
       queueWatcher(this)
     }
   }
