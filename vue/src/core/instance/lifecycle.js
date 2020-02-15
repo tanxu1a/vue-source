@@ -29,7 +29,7 @@ export function setActiveInstance(vm: Component) {
   }
 }
 
-// 初始化生命周期
+// 此方法主要初始化一些Vue实例(或子组件实例)的一些属性
 export function initLifecycle (vm: Component) {
   // 获得options
   const options = vm.$options
@@ -37,11 +37,12 @@ export function initLifecycle (vm: Component) {
   // locate first non-abstract parent
   let parent = options.parent
   // 如果parent(父组件)存在的话
-  // todo 后续注释
+  // 父组件存在且不是抽象组件，如<keep-alive></keep-alive>就是一个抽象组件
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
+    // 父组件实例的$children保存当前组件的实例
     parent.$children.push(vm)
   }
 
@@ -55,11 +56,17 @@ export function initLifecycle (vm: Component) {
   vm.$refs = {}
 
   // 初始化一些私有属性值 后续会用到
+  // 组件实例相应的 watcher 实例对象。
   vm._watcher = null
+  // 表示keep-alive中组件状态，如被激活，该值为false,反之为true。
   vm._inactive = null
+  // 也是表示keep-alive中组件状态的属性。
   vm._directInactive = false
+  // 当前实例是否完成挂载(对应生命周期图示中的mounted)。
   vm._isMounted = false
+  // 当前实例是否已经被销毁(对应生命周期图示中的destroyed)。
   vm._isDestroyed = false
+  // 当前实例是否正在被销毁,还没有销毁完成(介于生命周期图示中deforeDestroy和destroyed之间)。
   vm._isBeingDestroyed = false
 }
 

@@ -22,10 +22,17 @@ export function initRender (vm: Component) {
   vm._vnode = null // the root of the child tree
   // 初始化_staticTrees属性
   vm._staticTrees = null // v-once cached trees
+  // 获取options
   const options = vm.$options
+  // 获得父组件的占位vnode,其实也就是当前组件的vnode
+  // 最外层的vm的options._parentVnode是undefined
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
+  // renderContext === 父组件实例
   const renderContext = parentVnode && parentVnode.context
+  // options._renderChildren是写在组件插槽中的dom编译后生成的vnode
+  // vm.$slots保存了组件插槽中dom对应的vnode
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
+  // 作用域插槽属性初始化
   vm.$scopedSlots = emptyObject
   // bind the createElement fn to this instance
   // so that we get proper render context inside it.
@@ -82,7 +89,6 @@ export function renderMixin (Vue: Class<Component>) {
     const { render, _parentVnode } = vm.$options
 
     // 如果有parentVnode，第一次的根节点肯定是没有的
-    // todo
     if (_parentVnode) {
       vm.$scopedSlots = normalizeScopedSlots(
         _parentVnode.data.scopedSlots,

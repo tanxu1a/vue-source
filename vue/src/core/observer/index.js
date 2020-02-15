@@ -207,8 +207,12 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
   ) {
     warn(`Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`)
   }
+  // 如果是数组并且传入的参数index合法
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key)
+    // 向数组删除原有的再添加新的val
+    // 由于Array.prototype的原型方法splice被重写过，
+    // 所以可以通知到所有使用了此数组的界面更新
     target.splice(key, 1, val)
     return val
   }

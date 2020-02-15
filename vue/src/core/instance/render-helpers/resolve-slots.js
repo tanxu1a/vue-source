@@ -13,15 +13,20 @@ export function resolveSlots (
     return {}
   }
   const slots = {}
+  // 遍历vnode
   for (let i = 0, l = children.length; i < l; i++) {
     const child = children[i]
     const data = child.data
     // remove slot attribute if the node is resolved as a Vue slot node
+    // 移除属性名是slot的 如 <p slot="name1">
     if (data && data.attrs && data.attrs.slot) {
       delete data.attrs.slot
     }
     // named slots should only be respected if the vnode was rendered in the
     // same context.
+    // 具名的插槽中的vnode会保存到slots[name]中
+    // 匿名的插槽中的vnode会保存到slots[default]中
+    // 最终返回处理后的slot对象
     if ((child.context === context || child.fnContext === context) &&
       data && data.slot != null
     ) {

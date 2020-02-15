@@ -368,11 +368,13 @@ function normalizeInject (options: Object, vm: ?Component) {
 /**
  * Normalize raw function directives into object format.
  */
+//
 function normalizeDirectives (options: Object) {
   const dirs = options.directives
   if (dirs) {
     for (const key in dirs) {
       const def = dirs[key]
+      // 会把函数定义的指令转成对象形式
       if (typeof def === 'function') {
         dirs[key] = { bind: def, update: def }
       }
@@ -404,7 +406,7 @@ export function mergeOptions (
   if (process.env.NODE_ENV !== 'production') {
     checkComponents(child)
   }
-  // 如果child是函数
+  // 如果child是函数（一般是构造函数上的options）
   if (typeof child === 'function') {
     child = child.options
   }

@@ -10,7 +10,8 @@
         <p @click="click">{{ message }}</p>
         <p>{{test}}</p>
         <!--<a href="https://www.bai&#9;du.com"/>-->
-        <comp1 ref="comp1" :prop1.sync="message" prop2="2" prop3="3" >
+        <comp1 @test="click" ref="comp1" :prop1="message">
+            <p>slot</p>
         </comp1>
         <!--<input :type="type" v-model="test">-->
     </div>
@@ -34,7 +35,12 @@
          // },
          components: {
              comp1: {
-                 template: '<h1 @click="test"><h2>{{value1}}</h2><h3>{{prop1}}</h3></h1>',
+                 template: '<h1 @click="test"><h2>{{value1}}</h2><h3>{{prop1}}</h3><comp2></comp2><slot></slot></h1>',
+                 components: {
+                   comp2: {
+                     template: '<h1>comp2</h1>'
+                   }
+                 },
                  props: {
                      prop1: String
                  },
@@ -45,20 +51,25 @@
                  },
                methods: {
                    test: function () {
-                     console.log('ddd')
+                     this.$emit('test')
+                    // console.log('ddd')
                    }
                }
              }
          },
+       beforeCreate(){
+           console.log('beforeCreate')
+       },
        methods: {
              click: function () {
                  this.message = '123'
                  this.test = 321
+                 alert(123)
                  // this.$refs.comp1.$data.value1 = 333
              }
        },
         created: function () {
-          console.log(123)
+          console.log(this.$data)
         }
      })
 console.log(app)

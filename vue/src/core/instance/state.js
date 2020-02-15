@@ -321,7 +321,9 @@ export function stateMixin (Vue: Class<Component>) {
   // flow somehow has problems with directly declared definition object
   // when using Object.defineProperty, so we have to procedurally build up
   // the object here.
+  // 定义$data和$props的get和set方法
   const dataDef = {}
+  // this指向Vue实例
   dataDef.get = function () { return this._data }
   const propsDef = {}
   propsDef.get = function () { return this._props }
@@ -340,14 +342,18 @@ export function stateMixin (Vue: Class<Component>) {
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
+  // 定义$set方法
   Vue.prototype.$set = set
+  // 定义$delete方法
   Vue.prototype.$delete = del
 
+  // 定义$watch方法
   Vue.prototype.$watch = function (
     expOrFn: string | Function,
     cb: any,
     options?: Object
-  ): Function {
+  ): Function
+  {
     const vm: Component = this
     if (isPlainObject(cb)) {
       return createWatcher(vm, expOrFn, cb, options)
