@@ -7,21 +7,19 @@
 </head>
 <body>
     <div id="app">
-        <p @click="click">{{ message }}</p>
-        <p>{{test}}</p>
-        <!--<a href="https://www.bai&#9;du.com"/>-->
-        <comp1 @test="click" ref="comp1" :prop1="message">
-            <p>slot</p>
-        </comp1>
-        <!--<input :type="type" v-model="test">-->
+        <p>测试</p>
+        <p :v-if="true">v-if</p>
+        <div v-for="item in array">
+            <span>{{item}}</span>
+        </div>
     </div>
 </body>
 <script>
-    console.log(Vue.config)
      window.Vue.config.performance = true
      var app = new Vue({
          el: "#app",
          data: {
+             array: [1,2,3],
            message: "hello vue",
            test: 123,
            type: 'radio'

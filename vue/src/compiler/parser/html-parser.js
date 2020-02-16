@@ -53,26 +53,43 @@ function decodeAttr (value, shouldDecodeNewlines) {
 }
 // 解析html
 export function parseHTML (html, options) {
+  // 定义一个栈
   const stack = []
   // web环境是true
   const expectHTML = options.expectHTML
-  // 无内容的标签
+  // 无内容的标签 如<link href=xxx></link>
   const isUnaryTag = options.isUnaryTag || no
   // 可以不闭合的标签
+  // 例如：
+  //   <table>
+  //   <thead>
+  //   <tr>
+  //   <th scope="col">Income
+  //   <th scope="col">Taxes
+  //   <tbody>
+  //   <tr>
+  //   <td>$ 5.00
+  // <td>$ 4.50
+  // </table>
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
   let index = 0
   let last, lastTag
+  // 当html字符串不为空
   while (html) {
+    // 保存上一次处理的html字符串
     last = html
     // Make sure we're not in a plaintext content element like script/style
     // 确保父级标签不是 script,style,textarea
+    // 如果上一次处理的标签不是 script,style,textarea
     if (!lastTag || !isPlainTextElement(lastTag)) {
       // 第一个 '<' 的位置
       let textEnd = html.indexOf('<')
+      // 第一个字符是 '<'
       if (textEnd === 0) {
         // Comment:
         // 处理注释
         if (comment.test(html)) {
+          // 拿到注释结尾的下标
           const commentEnd = html.indexOf('-->')
 
           if (commentEnd >= 0) {
@@ -80,6 +97,7 @@ export function parseHTML (html, options) {
               // 调用传进来的comment处理方法
               options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3)
             }
+            // advanc方法就是截取字符串，html.substring(n)
             advance(commentEnd + 3)
             continue
           }
@@ -121,6 +139,7 @@ export function parseHTML (html, options) {
         const startTagMatch = parseStartTag()
         if (startTagMatch) {
           // 处理起始标签
+          // 主要逻辑是处理attrs，并调用options.start方法
           handleStartTag(startTagMatch)
           if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
             advance(1)
@@ -130,8 +149,12 @@ export function parseHTML (html, options) {
       }
 
       let text, rest, next
+      // 如果首个字符不是'<',  即起始和结束标签中的文本
       if (textEnd >= 0) {
+        // 截取到从下一个'<' 到结束
         rest = html.slice(textEnd)
+        // 如果没有匹配到结束标签注释，开始标签，注释，文档类型声明
+        // 说明'<'是 文本节点中的，并非标签的'<'
         while (
           !endTag.test(rest) &&
           !startTagOpen.test(rest) &&
@@ -139,14 +162,18 @@ export function parseHTML (html, options) {
           !conditionalComment.test(rest)
         ) {
           // < in plain text, be forgiving and treat it as text
+          // 如果之后没有'<'了，退出循环
+          // 否则继续往后找
           next = rest.indexOf('<', 1)
           if (next < 0) break
           textEnd += next
           rest = html.slice(textEnd)
         }
+        // 此时拿到的就是标签之间的文本
         text = html.substring(0, textEnd)
       }
 
+      // 如果没有'<'字符，那么就是一个纯文本了，没有标签
       if (textEnd < 0) {
         text = html
       }
@@ -156,9 +183,12 @@ export function parseHTML (html, options) {
       }
 
       if (options.chars && text) {
+        // 调用chars方法处理文本节点，生成对应的ast
         options.chars(text, index - text.length, index)
       }
     } else {
+      // 如果上一次处理的标签是 script,style,textarea
+      // 以下逻辑主要是在处理 script,style,textarea中的文本内容
       let endTagLength = 0
       const stackedTag = lastTag.toLowerCase()
       const reStackedTag = reCache[stackedTag] || (reCache[stackedTag] = new RegExp('([\\s\\S]*?)(</' + stackedTag + '[^>]*>)', 'i'))
@@ -179,22 +209,27 @@ export function parseHTML (html, options) {
       })
       index += html.length - rest.length
       html = rest
+      // 处理结束标签
       parseEndTag(stackedTag, index - endTagLength, index)
     }
 
+    // 如果下一次的html和上一次的相等
     if (html === last) {
+      // 那么直接调用chars方法把剩余的剩余的html字符串当作文本处理
       options.chars && options.chars(html)
       if (process.env.NODE_ENV !== 'production' && !stack.length && options.warn) {
         options.warn(`Mal-formatted tag at end of template: "${html}"`, { start: index + html.length })
       }
+      // 退出while循环
       break
     }
   }
 
   // Clean up any remaining tags
+  // 清空stack，stack保存了起始标签生成的ast
   parseEndTag()
 
-  // 截取前面的字符串串
+  // 去掉字符串前面n个字符
   function advance (n) {
     index += n
     html = html.substring(n)
@@ -225,8 +260,9 @@ export function parseHTML (html, options) {
     }
   }
 
-  // 处理开始标签 主要是在处理 attrs
+  // 处理开始标签 主要是在处理 attrs， 调用options.start方法
   function handleStartTag (match) {
+    // 获得标签名称
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
@@ -275,6 +311,7 @@ export function parseHTML (html, options) {
     }
   }
 
+  // 解析闭合标签， 调用options.end方法
   function parseEndTag (tagName, start, end) {
     let pos, lowerCasedTagName
     if (start == null) start = index
@@ -284,20 +321,24 @@ export function parseHTML (html, options) {
     // 在stack中找开始标签
     if (tagName) {
       lowerCasedTagName = tagName.toLowerCase()
+      // 从栈顶开始找，找到与结束标签匹配的开始标签的位置，赋给pos
       for (pos = stack.length - 1; pos >= 0; pos--) {
         if (stack[pos].lowerCasedTag === lowerCasedTagName) {
           break
         }
       }
     } else {
-      // 没找到 pos位置为 0
+      // 如果没有传tagName参数，pos=0，之后会执行stack.length = 0，即清空stack
       // If no tag name is provided, clean shop
       pos = 0
     }
 
+    // 如果找到对应的起始标签
     if (pos >= 0) {
       // Close all the open elements, up the stack
       // 遍历栈 从 栈顶-> pos
+      // 调用options.end闭合标签，因为有些标签可以没有闭合标签，
+      // 所以与闭合标签匹配的之间可以有多个起始标签
       for (let i = stack.length - 1; i >= pos; i--) {
         if (process.env.NODE_ENV !== 'production' &&
           (i > pos || !tagName) &&
@@ -318,11 +359,13 @@ export function parseHTML (html, options) {
       // 缩减栈长度，移除已经执行过闭合了的元素
       stack.length = pos
       lastTag = pos && stack[pos - 1].tag
-    } else if (lowerCasedTagName === 'br') {
+    }
+    else if (lowerCasedTagName === 'br') {
       if (options.start) {
         options.start(tagName, [], true, start, end)
       }
-    } else if (lowerCasedTagName === 'p') {
+    }
+    else if (lowerCasedTagName === 'p') {
       if (options.start) {
         options.start(tagName, [], false, start, end)
       }

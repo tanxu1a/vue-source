@@ -8,7 +8,9 @@ export const isReservedAttr = makeMap('style,class')
 
 // attributes that should be using props for binding
 const acceptValue = makeMap('input,textarea,option,select,progress')
-// 用来检测一个属性在标签中是否要使用元素对象原生的 prop 进行绑定
+// 判断 input,textarea,option,select,progress标签的value属性
+// option的selected属性，input的checked属性，video的muted属性是否存在
+// 如果这些标签的属性存在的话， 将被保存至ast对象的el.props属性中
 export const mustUseProp = (tag: string, type: ?string, attr: string): boolean => {
   return (
     (attr === 'value' && acceptValue(tag)) && type !== 'button' ||

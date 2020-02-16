@@ -26,6 +26,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
     options?: CompilerOptions,
     vm?: Component
   ): CompiledFunctionResult {
+    // 获得传入的options参数
     options = extend({}, options)
     const warn = options.warn || baseWarn
     delete options.warn
@@ -49,6 +50,8 @@ export function createCompileToFunctionFn (compile: Function): Function {
     }
 
     // check cache
+    // 做了缓存处理，如果缓存中有已经编译过的相同模版字符串的render函数，那么直接返回
+    // ps： 如果template很长，那么这个key未免有点太长了吧，汗。。。
     const key = options.delimiters
       ? String(options.delimiters) + template
       : template
@@ -57,6 +60,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
     }
 
     // compile
+    // 模版编译，将template编译为ast和render函数字符串并返回
     const compiled = compile(template, options)
 
     // check compilation errors/tips
@@ -88,9 +92,12 @@ export function createCompileToFunctionFn (compile: Function): Function {
     }
 
     // turn code into functions
+    // 定义返回值
     const res = {}
     const fnGenErrors = []
+    // 将render字符串转换为函数
     res.render = createFunction(compiled.render, fnGenErrors)
+    // 生成静态节点的render函数
     res.staticRenderFns = compiled.staticRenderFns.map(code => {
       return createFunction(code, fnGenErrors)
     })
@@ -109,6 +116,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
       }
     }
 
+    // 将res返回
     return (cache[key] = res)
   }
 }

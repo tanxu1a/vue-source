@@ -94,8 +94,16 @@ export function parse (
   // 可能是组件
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
 
+  // 遍历modules数组中每一个数组的transformNode方法
+  // 如[
+  //   klass, // klass = { staticKeys: ['staticClass'],transformNode,genData}
+  //   style,
+  //   model
+  // ]  每一项的transformNode
   transforms = pluckModuleFunction(options.modules, 'transformNode')
+  // 同上拿到所有preTransformNode方法,保存至一个数组中
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
+  // 同上拿到所有postTransformNode方法,保存至一个数组中
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
   // 表示  模板上 包裹表达式的开始和结束字符    默认是  ["{{", "}}"]

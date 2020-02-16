@@ -20,7 +20,7 @@ export const baseOptions: CompilerOptions = {
   isPreTag,
   // 没有内容的标签
   isUnaryTag,
-  // 用来检测一个属性在标签中是否要使用元素对象原生的 prop 进行绑定
+  // 判断那些标签的属性将被保存至ast对象的el.props属性中
   mustUseProp,
   // 可无结束标签
   canBeLeftOpenTag,
