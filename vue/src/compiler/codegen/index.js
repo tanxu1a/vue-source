@@ -58,20 +58,29 @@ export function genElement (el: ASTElement, state: CodegenState): string {
   }
 
   if (el.staticRoot && !el.staticProcessed) {
+    // 如果是一个静态的树， 如 <div id="app">123</div>
+    // 生成_m()方法
+    // 静态的渲染函数被保存至staticRenderFns属性中
     return genStatic(el, state)
   } else if (el.once && !el.onceProcessed) {
+    // v-once 转化为_o()方法
     return genOnce(el, state)
   } else if (el.for && !el.forProcessed) {
+    // _l()
     return genFor(el, state)
   } else if (el.if && !el.ifProcessed) {
+    // v-if 会转换为表达式
     return genIf(el, state)
   } else if (el.tag === 'template' && !el.slotTarget && !state.pre) {
+    // 如果是template，处理子节点
     return genChildren(el, state) || 'void 0'
   } else if (el.tag === 'slot') {
+    // 如果是插槽，处理slot
     return genSlot(el, state)
   } else {
     // component or element
     let code
+    // 如果是组件，处理组件
     if (el.component) {
       code = genComponent(el.component, el, state)
     } else {
