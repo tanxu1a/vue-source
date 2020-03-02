@@ -12,6 +12,7 @@ import {
 } from 'web/util/index'
 
 function updateClass (oldVnode: any, vnode: any) {
+  // 拿到真实的dom
   const el = vnode.elm
   const data: VNodeData = vnode.data
   const oldData: VNodeData = oldVnode.data
@@ -27,6 +28,7 @@ function updateClass (oldVnode: any, vnode: any) {
     return
   }
 
+  // 生成样式
   let cls = genClassForVnode(vnode)
 
   // handle transition classes
@@ -35,6 +37,7 @@ function updateClass (oldVnode: any, vnode: any) {
     cls = concat(cls, stringifyClass(transitionClass))
   }
 
+  // 重新设置样式
   // set the class
   if (cls !== el._prevClass) {
     el.setAttribute('class', cls)

@@ -84,12 +84,14 @@ export function renderMixin (Vue: Class<Component>) {
   // 挂在_render方法
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
-    // 拿到render函数和父节点的Vnode
+    // 拿到render函数和_parentVnode
+    // _parentVnode就是类似 <comp1 prop1="123"></comp1>  转化而来的vnode，而非comp1组件内部的vnode，组件内部的vnode是vm._vnode
     // render函数可以是从模板编译来的也可以是用户自定义的render函数
     const { render, _parentVnode } = vm.$options
 
-    // 如果有parentVnode，第一次的根节点肯定是没有的
+    // 如果是非根组件，因为根实例没有_parentVnode
     if (_parentVnode) {
+      // 处理slot相关数据
       vm.$scopedSlots = normalizeScopedSlots(
         _parentVnode.data.scopedSlots,
         vm.$slots,
@@ -102,15 +104,13 @@ export function renderMixin (Vue: Class<Component>) {
     // $vnode表示父节点的vnode
     vm.$vnode = _parentVnode
     // render self
-    // 开始渲染
     let vnode
     try {
       // There's no need to maintain a stack because all render fns are called
       // separately from one another. Nested component's render fns are called
       // when parent component is patched.
-      // 当前正在渲染的Vue实例
+      // 全局变量，当前正在渲染的Vue实例
       currentRenderingInstance = vm
-      // vm._renderProxy主要对has  或 get 方法做了一些代理，主要为提示错误
       // 执行render函数，参数是 $createElement方法，this = vm
       // 如果是用户自定义render函数，那么会调用render(vm.$createElement)
       // 如果是从模板编译来的，都是调用vm._c()
@@ -128,7 +128,6 @@ export function renderMixin (Vue: Class<Component>) {
           vnode = vm._vnode
         }
       } else {
-        // 如果失败 赋值为 vm._vnode 首次是null，以后可能是上一次生成的vnode
         vnode = vm._vnode
       }
     } finally {

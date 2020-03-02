@@ -5,6 +5,11 @@
     <title>vue源码分析</title>
     <script src="./vue/dist/vue.js"></script>
 </head>
+<style>
+    .test{
+        color: red;
+    }
+</style>
 <body>
     <div id="app">
         <comp1 prop1="hello"></comp1>
@@ -29,7 +34,7 @@
          // },
          components: {
              comp1: {
-                 template: '<h1 @click="test"><h2>{{value1}}</h2><h3>{{prop1}}</h3><comp2></comp2><slot></slot></h1>',
+                 template: '<h1 class="test" @click="test"><h2>{{value1}}</h2><h3>{{prop1}}</h3><comp2></comp2><slot></slot></h1>',
                  components: {
                    comp2: {
                      template: '<h1>comp2</h1>'

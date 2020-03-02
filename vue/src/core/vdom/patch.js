@@ -152,11 +152,9 @@ export function createPatchFunction (backend) {
       return
     }
 
-    // 渲染跟节点的vnode会往下走
-
     // 拿到vnode的数据
     const data = vnode.data
-    // 拿到子vnode
+    // 拿到子组件vnode
     const children = vnode.children
     // 拿到标签
     const tag = vnode.tag
@@ -176,6 +174,7 @@ export function createPatchFunction (backend) {
         }
       }
 
+      // 创建真实dom节点
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
@@ -201,11 +200,12 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
-        // 创建根vnode的子vnode的element
+        // 递归创建子节点元素，如果是组件，会渲染组件的dom
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
+        // 将生成的dom传入到父节点中
         insert(parentElm, vnode.elm, refElm)
       }
 
@@ -242,7 +242,9 @@ export function createPatchFunction (backend) {
       // in that case we can just return the element and be done.
       // 如果vnode是一个子组件的话，即非根组件，返回true
       if (isDef(vnode.componentInstance)) {
+        // 初始化组件
         initComponent(vnode, insertedVnodeQueue)
+        // 将子组件的dom插入至父节点中
         insert(parentElm, vnode.elm, refElm)
         if (isTrue(isReactivated)) {
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
