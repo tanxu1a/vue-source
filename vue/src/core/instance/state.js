@@ -49,14 +49,19 @@ export function initState (vm: Component) {
   // 定义watcher
   vm._watchers = []
   const opts = vm.$options
+  // 初始化props
   if (opts.props) initProps(vm, opts.props)
+  // 初始化methods
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
+    // 初始化数据
     initData(vm)
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  // 初始化计算属性
   if (opts.computed) initComputed(vm, opts.computed)
+  // 初始化监听方法
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
   }
@@ -111,10 +116,13 @@ function initProps (vm: Component, propsOptions: Object) {
 }
 
 function initData (vm: Component) {
+  // 获得data数据
   let data = vm.$options.data
+  // 如果是函数，通过getData拿到data
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}
+    // 如果不是对象，报错
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -149,6 +157,7 @@ function initData (vm: Component) {
     }
   }
   // observe data
+  // 调用observe方法
   observe(data, true /* asRootData */)
 }
 

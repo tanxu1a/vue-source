@@ -99,10 +99,13 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
+    // 设置当前正在渲染的组件的渲染Watcher
     pushTarget(this)
     let value
     const vm = this.vm
     try {
+      // getter是在构造方法中设置的
+      // 执行getter方法，其实就是传入的_update方法，执行其可以生成vnode，首次渲染时创建真实dom
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -131,6 +134,7 @@ export default class Watcher {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
+        // this指向Watcher实例
         // Watcher实例添加至Dep的subs中
         dep.addSub(this)
       }

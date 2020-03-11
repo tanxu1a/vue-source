@@ -17,25 +17,33 @@ export default class Dep {
   subs: Array<Watcher>;
 
   constructor () {
+    // 依赖收集对象id
     this.id = uid++
+    // 保存依赖于该数据的观察者Watcher
     this.subs = []
   }
 
+  // 添加依赖该数据的观察者对象
   addSub (sub: Watcher) {
     this.subs.push(sub)
 
   }
 
+  // 移除观察者
   removeSub (sub: Watcher) {
     remove(this.subs, sub)
   }
 
+  // 依赖收集
   depend () {
+    // Dep.target指向当前正在渲染的组件的Watcher实例子
     if (Dep.target) {
+      // this指向dep的实例
       Dep.target.addDep(this)
     }
   }
 
+  // 通知观察者触发更新
   notify () {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
