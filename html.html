@@ -12,13 +12,13 @@
 </style>
 <body>
     <div id="app">
-        <p @click="click">{{message}}</p>
-        <comp1></comp1>
+        <p>{{sum}}</p>
+        <button @click="click">计算</button>
     </div>
 </body>
 <script>
      let data = {
-         array: [1,2,3],
+         sum: 0,
          message: "hello vue",
      }
      var app = new Vue({
@@ -26,18 +26,8 @@
          data: data,
          methods: {
              click () {
-                 this.message = "Hello World"
-             }
-         },
-         components: {
-             comp1: {
-                 template: '<h1>{{message}}</h1>',
-                 props: {
-                     prop1: String
-                 },
-                 data: function () {
-                     return data
-                 },
+                 this.sum += 10;
+                 this.sum *= this.sum
              }
          },
      })

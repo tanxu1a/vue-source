@@ -68,6 +68,7 @@ if (inBrowser && !isIE) {
 /**
  * Flush both queues and run the watchers.
  */
+// 执行异步队列中保存的所有的Watcher的更新方法
 function flushSchedulerQueue () {
   currentFlushTimestamp = getNow()
   // 正在更新
@@ -116,6 +117,7 @@ function flushSchedulerQueue () {
   const activatedQueue = activatedChildren.slice()
   const updatedQueue = queue.slice()
 
+  // 重置queue = []  waiting = flushing = false
   resetSchedulerState()
 
   // call component updated and activated hooks
@@ -165,13 +167,22 @@ function callActivatedHooks (queue) {
  */
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id
+  // 这里用一个has的哈希表存储已经存在与异步队列中等待下一次更新的Watcher(观察者)
+  // 如果队列中已经存在了，那就不重复添加了
   if (has[id] == null) {
     has[id] = true
+    // flushing是指是否正在执行异步队列中的更新方法
+    // 如果没有正在执行异步队列中的更新方法
     if (!flushing) {
+      // 就将当前的观察者推送到异步队列中
       queue.push(watcher)
     } else {
       // if already flushing, splice the watcher based on its id
       // if already past its id, it will be run next immediately.
+      // 否则如果有正在执行的异步队列（每次是队列里的方法一批量执行的）
+      // 从后往前找到那个 同id的 Watcher将其替换掉
+      // （因为组件更新的过程中也会更改数据，将Watcher推到异步队列）
+      // 如果没找到，那么将会放到queue的末尾
       let i = queue.length - 1
       while (i > index && queue[i].id > watcher.id) {
         i--
@@ -179,14 +190,17 @@ export function queueWatcher (watcher: Watcher) {
       queue.splice(i + 1, 0, watcher)
     }
     // queue the flush
+    // 如果没有正在执行的更新操作
     if (!waiting) {
+      // waitting表示正在更新
       waiting = true
 
       if (process.env.NODE_ENV !== 'production' && !config.async) {
         flushSchedulerQueue()
         return
       }
-      // 将更新的回调推送至下一次更新队列中
+      // 将flushSchedulerQueue加入到callbacks中
+      // 将更新的回调推送至callbacks中
       nextTick(flushSchedulerQueue)
     }
   }
